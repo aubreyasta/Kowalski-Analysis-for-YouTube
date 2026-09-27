@@ -1,6 +1,6 @@
 # Kowalski, analysis but YouTube
 
-Reads a campaign's YouTube comments and reports whether the message landed.
+Reads a campaign's YouTube comments and reports whether the message landed. UI/UX is inspired from [GWI](https://www.gwi.com/) for InnOcean's familiarity with the tool already.
 
 [Live demo](https://aubreyasta.github.io/Kowalski-Analysis-for-YouTube/?demo=1#/runs/example-run/results) · [Sample report (PDF)](app/demo/report.pdf) · [Setup](docs/setup.md) · [Architecture](docs/architecture.md)
 
