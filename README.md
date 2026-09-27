@@ -4,7 +4,7 @@ Reads a campaign's YouTube comments and reports whether the message landed.
 
 [Sample report (PDF)](app/demo/report.pdf) · [Try the demo](#try-it) · [Setup](docs/setup.md) · [Architecture](docs/architecture.md)
 
-![Kowalski results screen for the Indomie Cabe Ijo relaunch: 16% overall Travel and a Travel bar per Key Message](docs/media/results.png)
+![Walkthrough: create a Session, add two YouTube videos, run, confirm the Key Messages, then open the comments behind a Travel figure](docs/media/walkthrough.gif)
 
 Kowalski takes a campaign's YouTube videos and briefs and returns a reception report: which Key Messages the audience repeated, what else they talked about, and how they felt. It was built at Innocean Indonesia for the agency's campaign strategists.
 
@@ -134,6 +134,8 @@ These are the only words used in this repo's prose. Code identifiers still carry
 
 **Read the results.** Key Message Travel as percentages with a positive and negative split, the Theme mix, overall Sentiment, overall Emotions, and a written summary. Opening a completed Session from the list goes straight to its results. "Re-run analysis" returns to the setup page.
 
+![Results screen for the Indomie Cabe Ijo relaunch: 16% overall Travel and a Travel bar per Key Message](docs/media/results.png)
+
 ---
 
 ## What you get
@@ -187,7 +189,7 @@ Chat, source discovery, OCR, custom lenses, and run history are out of scope. Di
 - [docs/architecture.md](docs/architecture.md) how the pipeline, backend, and frontend fit together.
 - [docs/api-reference.md](docs/api-reference.md) the HTTP contract.
 
-README screenshots come from the demo mode. Regenerate them with `python demo_data/capture_screenshots.py`.
+The README screenshots and walkthrough GIF come from the demo mode. Regenerate them with `python demo_data/capture_screenshots.py` (needs `ffmpeg` on `PATH`).
 
 ---
 
