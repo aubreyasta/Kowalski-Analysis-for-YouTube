@@ -1,0 +1,5 @@
+﻿group,key_message,count,percent,base_n,positive_count,positive_percent,negative_count,negative_percent,sentiment_base_n
+Indomie,Authentic green chili flavor,16,8.8,181,7,43.8,5,31.2,16
+Indomie,"Bolder, upgraded taste",9,5.0,181,6,66.7,1,11.1,9
+Indomie,Real green chili,5,2.8,181,1,20.0,3,60.0,5
+Indomie,Jumbo Size Variant,4,2.2,181,3,75.0,0,0.0,4

@@ -1,0 +1,6 @@
+﻿group,emotion,count,percent,base_n
+Indomie,other_neutral,102,56.4,181
+Indomie,joy,72,39.8,181
+Indomie,anger,3,1.7,181
+Indomie,sadness,3,1.7,181
+Indomie,fear,1,0.6,181

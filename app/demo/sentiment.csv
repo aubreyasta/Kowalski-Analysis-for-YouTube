@@ -1,0 +1,4 @@
+﻿group,sentiment,count,percent,base_n
+Indomie,neutral,88,48.6,181
+Indomie,positive,73,40.3,181
+Indomie,negative,20,11.0,181

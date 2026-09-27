@@ -8,7 +8,6 @@ Fails on any page error or missing screen, so a UI change cannot leave
 stale media behind silently.
 """
 
-import csv
 import functools
 import shutil
 import subprocess
@@ -22,7 +21,8 @@ from playwright.sync_api import sync_playwright
 ROOT = Path(__file__).resolve().parent.parent
 APP_DIR = ROOT / "app"
 OUT_DIR = ROOT / "docs" / "media"
-VIDEO_IDS = [row["video_id"] for row in csv.DictReader(open(ROOT / "demo_data" / "videos.csv", encoding="utf-8"))]
+# The two videos DEMO_VIDEOS in app/app.js resolves to real titles.
+VIDEO_IDS = ["Rl-sPdzYlXc", "bvtSIAULS88"]
 TIMEOUT_MS = 60_000
 GIF_WIDTH = 960
 
