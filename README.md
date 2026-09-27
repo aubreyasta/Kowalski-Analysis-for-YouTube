@@ -2,7 +2,7 @@
 
 Reads a campaign's YouTube comments and reports whether the message landed.
 
-[Live demo](https://aubreyasta.github.io/YouTube-Comments-Intelligence/?demo=1#/runs/example-run/results) · [Sample report (PDF)](app/demo/report.pdf) · [Setup](docs/setup.md) · [Architecture](docs/architecture.md)
+[Live demo](https://aubreyasta.github.io/Kowalski-Analysis-for-YouTube/?demo=1#/runs/example-run/results) · [Sample report (PDF)](app/demo/report.pdf) · [Setup](docs/setup.md) · [Architecture](docs/architecture.md)
 
 ![Walkthrough: create a Session, add two YouTube videos, run, confirm the Key Messages, then open the comments behind a Travel figure](docs/media/walkthrough.gif)
 
@@ -80,7 +80,7 @@ Evidence works the same way. For each metric the tool takes up to eight comments
 
 ## Try it
 
-**[Live demo](https://aubreyasta.github.io/YouTube-Comments-Intelligence/?demo=1#/runs/example-run/results), no model or keys needed.** The frontend has a demo mode that replays the hand-labelled Indomie Cabe Ijo Session from `app/demo/`. It never calls the model or the API. It opens on the finished Session's results. Create a new Session, paste any YouTube link, and start a run to walk the full flow, including the Key Message review, in under a minute.
+**[Live demo](https://aubreyasta.github.io/Kowalski-Analysis-for-YouTube/?demo=1#/runs/example-run/results), no model or keys needed.** The frontend has a demo mode that replays the hand-labelled Indomie Cabe Ijo Session from `app/demo/`. It never calls the model or the API. It opens on the finished Session's results. Create a new Session, paste any YouTube link, and start a run to walk the full flow, including the Key Message review, in under a minute.
 
 The same demo runs locally:
 
@@ -176,7 +176,7 @@ The server reaches LM Studio on the same machine or on a private-network host th
 
 ## Status
 
-Finished on 2026-09-11. Two real Sessions ran through the web app against the live model, and each labelled all 574 comments. Known bugs and planned work are [open GitHub issues](https://github.com/aubreyasta/YouTube-Comments-Intelligence/issues).
+Finished on 2026-09-11. Two real Sessions ran through the web app against the live model, and each labelled all 574 comments. Known bugs and planned work are [open GitHub issues](https://github.com/aubreyasta/Kowalski-Analysis-for-YouTube/issues).
 
 Chat, source discovery, OCR, custom lenses, and run history are out of scope. Disabled controls stay disabled rather than pretending those features exist.
 

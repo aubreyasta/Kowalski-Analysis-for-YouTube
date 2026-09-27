@@ -35,8 +35,8 @@ Use an isolated Python environment. The environment name does not affect the app
 Clone the repository, create the environment, and install both dependency sets:
 
 ```bash
-git clone https://github.com/aubreyasta/YouTube-Comments-Intelligence.git
-cd YouTube-Comments-Intelligence
+git clone https://github.com/aubreyasta/Kowalski-Analysis-for-YouTube.git
+cd Kowalski-Analysis-for-YouTube
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
