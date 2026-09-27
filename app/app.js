@@ -3633,7 +3633,7 @@ async function route() {
     else await renderHome();
   } catch (err) {
     if (seq !== routeSeq) return;
-    setTopbar('<div class="topbar-left"><span class="topbar-title">Resonance</span></div><div class="topbar-right"></div>');
+    setTopbar('<div class="topbar-left"><span class="topbar-title">Kowalski</span></div><div class="topbar-right"></div>');
     view.innerHTML = `
     <div class="view-pad">
       <div class="empty-block">
