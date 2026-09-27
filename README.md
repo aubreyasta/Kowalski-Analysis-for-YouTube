@@ -42,14 +42,21 @@ A Key Message with a low Travel score **did not arrive**, which is a different d
 ## How it works
 
 ```mermaid
-flowchart LR
-    A[Briefs, articles, images,<br>transcripts, titles] --> B[Key Messages]
-    B --> R{You review<br>and confirm}
-    C[YouTube comments] --> D[Theme book<br>from a sample]
-    R --> E[Qwen labels<br>every comment]
-    D --> E
-    E --> F[Python validates<br>and counts]
-    F --> G[Results screen,<br>report.pdf, 5 CSVs]
+flowchart TB
+    subgraph campaign["Campaign side: never sees the comments"]
+        direction TB
+        A["Briefs, articles, images,<br>transcripts, titles"] --> B["Key Messages,<br>confirmed by you"]
+    end
+    subgraph audience["Audience side: never sees the campaign"]
+        direction TB
+        C["YouTube comments"] --> D["Theme book<br>from a sample"]
+    end
+    subgraph measure["Measured together"]
+        direction LR
+        E["Qwen labels<br>every comment:<br>Theme, Key Messages,<br>Sentiment, Emotion"] --> F["Python validates<br>and counts"] --> G["Results screen,<br>report.pdf, 5 CSVs"]
+    end
+    campaign --> measure
+    audience --> measure
 ```
 
 Percentages are counted in Python over per-comment labels. The model never produces a statistic directly. Models are poor at counting over large sets, and a number with no per-comment label behind it cannot be checked. Every figure in the report traces back to rows in `comments.csv`.
