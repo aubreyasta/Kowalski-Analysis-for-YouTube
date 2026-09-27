@@ -393,6 +393,54 @@ function startEngineSchedule(engine) {
   go(run.stage);
 }
 
+// Fresh brief points per run, one per fixture point.
+function addFixtureBriefPoints(run) {
+  FIXTURE_POINTS.forEach((fx, i) => {
+    const p = {
+      id: uid(), runId: run.id, label: fx.label, description: fx.description,
+      included: true, order: i + 1, source: fx.source,
+    };
+    store.briefPoints.set(p.id, p);
+    run.briefPointIds.push(p.id);
+  });
+}
+
+/* Deliberate demo mode opens on one finished Indomie Session, so a visitor
+   lands on results instead of an empty list. The fixed run ID keeps the
+   public link stable: ?demo=1#/runs/example-run/results */
+function seedExampleSession() {
+  const ts = nowIso();
+  const session = {
+    id: "example-session", name: "Indomie Cabe Ijo", campaignIds: ["example-campaign"],
+    status: "ready", commentCount: 0, updatedAt: ts, keyMessages: initialKeyMessages(),
+  };
+  const campaign = {
+    id: "example-campaign", sessionId: session.id, name: session.name,
+    videoIds: [], assetIds: [], briefPointIds: [],
+  };
+  store.sessions.set(session.id, session);
+  store.campaigns.set(campaign.id, campaign);
+  let total = 0;
+  for (const [videoId, meta] of Object.entries(DEMO_VIDEOS)) {
+    const v = {
+      id: "example-" + videoId, campaignId: campaign.id,
+      url: "https://www.youtube.com/watch?v=" + videoId, videoId, format: "video", kind: "auto",
+      title: meta.title, channel: meta.channel, thumbnailUrl: null, commentCount: meta.commentCount,
+    };
+    store.videos.set(v.id, v);
+    campaign.videoIds.push(v.id);
+    total += v.commentCount;
+  }
+  const run = {
+    id: "example-run", sessionId: session.id, status: "complete", stage: "complete",
+    pct: 100, message: STAGE_MESSAGES.complete, counts: { total, labelled: total },
+    briefPointIds: [], error: null, skipPause: false, createdAt: ts,
+  };
+  addFixtureBriefPoints(run);
+  store.runs.set(run.id, run);
+  finalizeRun({ run, counts: { total } });
+}
+
 /* ============================== demoApi ============================== */
 
 // Mirrors the live session's latestRun: the most recently started run, or null.
@@ -736,17 +784,7 @@ const demoApi = {
       pct: 0, message: "Queued", counts: {}, briefPointIds: [], error: null,
       skipPause: !!skipPause, createdAt: nowIso(),
     };
-    // Fresh brief points per run, one per fixture point.
-    const pointCount = FIXTURE_POINTS.length;
-    for (let i = 0; i < pointCount; i++) {
-      const fx = FIXTURE_POINTS[i];
-      const p = {
-        id: uid(), runId: run.id, label: fx.label, description: fx.description,
-        included: true, order: i + 1, source: fx.source,
-      };
-      store.briefPoints.set(p.id, p);
-      run.briefPointIds.push(p.id);
-    }
+    addFixtureBriefPoints(run);
     store.runs.set(run.id, run);
     s.status = "running";
     s.updatedAt = nowIso();
@@ -3633,7 +3671,7 @@ async function route() {
     else await renderHome();
   } catch (err) {
     if (seq !== routeSeq) return;
-    setTopbar('<div class="topbar-left"><span class="topbar-title">Resonance</span></div><div class="topbar-right"></div>');
+    setTopbar('<div class="topbar-left"><span class="topbar-title">Kowalski</span></div><div class="topbar-right"></div>');
     view.innerHTML = `
     <div class="view-pad">
       <div class="empty-block">
@@ -3670,6 +3708,7 @@ if (view && topbar && overlayRoot) {
 
   if (forcedDemo) {
     demoApi.mode = "demo";
+    seedExampleSession();
     route();
   } else {
     // Mode probe: live when __liveApi exists AND GET /api/sessions succeeds within 1200ms.

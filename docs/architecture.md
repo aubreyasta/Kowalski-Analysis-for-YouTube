@@ -219,7 +219,7 @@ A plain `/` probes `GET /api/sessions` through `window.__liveApi`. Success selec
 
 `?demo=1` explicitly enters the committed Indomie demo and stores that choice in `sessionStorage` for the current tab. Explicit demo mode skips the probe and never delegates to `window.__liveApi`, so demo actions cannot reach the live database. A second tab opened at plain `/` remains live.
 
-The demo replays generated artifacts and metrics from `app/demo/`. It does not run the model or call `/api`.
+The demo replays generated artifacts and metrics from `app/demo/`. It does not run the model or call `/api`. Explicit demo mode starts with one finished example Session under the fixed run ID `example-run`, so a visitor can open its results without running anything.
 
 ### Product flow
 

@@ -16,6 +16,8 @@ A Dokploy instance on a remote workstation keeps a test copy in sync with `main`
 - Dokploy builds the image from `railpack.json`: a virtual environment at `/app/.venv`, the Python dependencies, and Playwright Chromium.
 - The container starts with `python server.py`. The image contains no `cloudflared`, and `start.sh` is unused.
 
+GitHub Pages serves the public demo. A push to `main` that changes `app/` runs `.github/workflows/pages.yml`, which publishes `app/` as static files. With no backend behind it, the app stays in demo mode. The README links to `?demo=1#/runs/example-run/results`.
+
 Open operational decisions:
 
 - **Model access.** Dokploy runs the app as a Docker Swarm service, which has no host-network mode, so the container cannot use a loopback `LLM_BASE_URL`. Since #29, `LLM_BASE_URL` accepts any host. Point it at the workstation's private address and set `LLM_HEADERS` to an LM Studio API token (see [Setup](setup.md#using-a-remote-lm-studio)). This configuration is not applied yet.
