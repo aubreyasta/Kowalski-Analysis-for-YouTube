@@ -194,8 +194,8 @@ Use a small local PNG or JPEG. Send it through LM Studio's OpenAI-compatible mul
 Clone the repository and create the environment:
 
 ```bash
-git clone https://github.com/aubreyasta/YouTube-Comments-Intelligence.git
-cd YouTube-Comments-Intelligence
+git clone https://github.com/aubreyasta/Kowalski-Analysis-for-YouTube.git
+cd Kowalski-Analysis-for-YouTube
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
