@@ -1,6 +1,16 @@
-# YouTube Comment Intelligence
+# Kowalski, analysis but YouTube
 
-Put a campaign's YouTube videos in. Get a reception report out.
+Reads a campaign's YouTube comments and reports whether the message landed.
+
+[Sample report (PDF)](app/demo/report.pdf) · [Try the demo](#try-it) · [Setup](docs/setup.md) · [Architecture](docs/architecture.md)
+
+![Kowalski results screen for the Indomie Cabe Ijo relaunch: 16% overall Travel and a Travel bar per Key Message](docs/media/results.png)
+
+Kowalski takes a campaign's YouTube videos and briefs and returns a reception report: which Key Messages the audience repeated, what else they talked about, and how they felt. It was built at Innocean Indonesia for the agency's campaign strategists.
+
+---
+
+## Why it works this way
 
 The tool answers two questions separately and then joins them:
 
@@ -9,7 +19,81 @@ The tool answers two questions separately and then joins them:
 
 Keeping them apart is the point. If the model saw the comments while describing the campaign, "did the message land" becomes circular and always answers yes.
 
-A Key Message with a low travel score **did not arrive**, which is a different diagnosis from being rejected. The fix for the first is execution and media. The fix for the second is the idea.
+A Key Message with a low Travel score **did not arrive**, which is a different diagnosis from being rejected. The fix for the first is execution and media. The fix for the second is the idea.
+
+---
+
+## Highlights
+
+- **Key Messages drafted live.** Add a PDF, DOCX, or PPTX brief, an article URL, or a campaign image, and the Key Messages update on the page before any run starts.
+- **A human checks the Key Messages before labelling.** The run pauses after reading the transcripts. You edit, drop, or add Key Messages, then confirm. Nothing is measured against a Key Message you did not approve.
+- **One model pass per comment.** A local Qwen model gives every comment one Theme, zero or more Key Messages, one Sentiment, and one Emotion.
+- **Every number opens its comments.** Python counts every percentage from per-comment labels. Click any figure to read the comments behind it.
+- **Six exports.** A PDF debrief and five CSVs shaped for Google Slides or any chart tool.
+- **No external model API.** The model runs in LM Studio on machines you control, so client material stays in-house and a run has no per-token cost.
+- **Office sign-in.** Google Workspace accounts only. Admins can block or erase users.
+
+![Key Message review: four Key Messages, one sharpened and one new from the transcripts, each with an include checkbox](docs/media/key-message-review.png)
+
+![A Key Message's Travel figure opened to show the 16 comments that carry the label, with likes, Emotion, and Sentiment](docs/media/evidence.png)
+
+---
+
+## How it works
+
+```mermaid
+flowchart LR
+    A[Briefs, articles, images,<br>transcripts, titles] --> B[Key Messages]
+    B --> R{You review<br>and confirm}
+    C[YouTube comments] --> D[Theme book<br>from a sample]
+    R --> E[Qwen labels<br>every comment]
+    D --> E
+    E --> F[Python validates<br>and counts]
+    F --> G[Results screen,<br>report.pdf, 5 CSVs]
+```
+
+Percentages are counted in Python over per-comment labels. The model never produces a statistic directly. Models are poor at counting over large sets, and a number with no per-comment label behind it cannot be checked. Every figure in the report traces back to rows in `comments.csv`.
+
+Evidence works the same way. For each metric the tool takes up to eight comments that carry that label, ranked by likes and then by length. It is a rule, not a selection, so nobody picks quotes to fit a story.
+
+---
+
+## Tech stack
+
+| Layer | Tools |
+|---|---|
+| Model | `Qwen3.8-27B` (multimodal) served by LM Studio |
+| Pipeline | Python, pandas, YouTube Data API, `youtube-transcript-api`, `langdetect` |
+| Backend | FastAPI, Uvicorn, SQLite, server-sent events for run progress |
+| Frontend | Vanilla JavaScript and CSS, no framework, no build step |
+| Documents | `pypdf`, `python-docx`, `python-pptx` for inputs; Playwright Chromium for `report.pdf` |
+| Auth | Google Workspace OAuth |
+
+---
+
+## Try it
+
+**Demo, no model or keys needed.** The frontend has a demo mode that replays the hand-labelled Indomie Cabe Ijo Session from `app/demo/`. It never calls the model or the API.
+
+```bash
+python -m http.server 8000 --bind 127.0.0.1 --directory app
+# open http://127.0.0.1:8000/?demo=1
+```
+
+Create a Session, paste any YouTube link, and start a run. The demo walks the full flow, including the Key Message review, in under a minute.
+
+**Full app.** Needs YouTube API keys, a Google OAuth client, and LM Studio.
+
+```bash
+pip install -r requirements.txt -r requirements-server.txt
+playwright install chromium
+python server.py
+# http://localhost:8000
+```
+
+Installation, model setup, and troubleshooting: [docs/setup.md](docs/setup.md). Deployment state: [docs/deployment.md](docs/deployment.md).
+
+There is also a CLI (`python run.py`, configured through `config.py`) for debugging the pipeline without the web layer. It is not the product and it is not maintained to the same standard.
 
 ---
 
@@ -33,21 +117,15 @@ These are the only words used in this repo's prose. Code identifiers still carry
 
 ## The flow
 
-**Set up a Session.** Give it a name and paste YouTube links. Add User Inputs: PDF or DOCX or PPTX briefs, article URLs, campaign images. Each one is read as you add it, and the Key Messages appear on the page straight away, so you can see whether the tool understood the campaign before committing to a run.
+**Set up a Session.** Give it a name and paste YouTube links. Add User Inputs: PDF, DOCX, or PPTX briefs, article URLs, campaign images. Each one is read as you add it, and the Key Messages appear on the page straight away, so you can see whether the tool understood the campaign before committing to a run.
 
-**Review the Key Messages.** The run pauses after collecting the transcripts, which can sharpen or add to the draft. Edit the wording, exclude the ones that are wrong, confirm. Nothing gets measured against a Key Message you did not approve. If another analysis is waiting, a review left alone for 10 minutes stops the run so it does not hold that analysis up.
+**Review the Key Messages.** The run pauses after collecting the transcripts, which can sharpen or add to the draft. Edit the wording, exclude the ones that are wrong, confirm. If another analysis is waiting, a review left alone for 10 minutes stops the run so it does not hold that analysis up.
 
-**Run.** In order: scrape comments and transcripts, build the Theme book from a sample, then use one Qwen classification pass to label every comment with one Theme, zero or more Key Messages, one Sentiment, and one Emotion. Python validates the labels and counts the results.
+**Run.** In order: scrape comments and transcripts, build the Theme book from a sample, then label every comment in one Qwen classification pass. Python validates the labels and counts the results.
 
-**Read the results.** Key Message travel as percentages with a positive and negative split, the Theme mix, overall Sentiment, overall Emotions, and a written summary. Every percentage is clickable and shows the comments behind it. Opening a completed Session from the list goes straight to its results; "Re-run analysis" returns to the setup page.
+![Run progress: collecting comments, reading the brief, labelling every comment, double-checking the leftovers, writing the report](docs/media/run-progress.png)
 
----
-
-## Where the numbers come from
-
-Percentages are counted in Python over per-comment labels. The model never produces a statistic directly. Models are poor at counting over large sets, and a number with no per-comment label behind it cannot be checked. Every figure in the report traces back to rows in `comments.csv`.
-
-Evidence works the same way. For each metric the tool takes up to eight comments that carry that label, ranked by likes and then by length. It is a rule, not a selection, so nobody is choosing quotes to fit a story.
+**Read the results.** Key Message Travel as percentages with a positive and negative split, the Theme mix, overall Sentiment, overall Emotions, and a written summary. Opening a completed Session from the list goes straight to its results. "Re-run analysis" returns to the setup page.
 
 ---
 
@@ -57,7 +135,7 @@ Six files per run.
 
 | File | For |
 |---|---|
-| `report.pdf` | The debrief. Same content as the results screen. |
+| `report.pdf` | The debrief. Same content as the results screen. An internal debrief, not a client deliverable. |
 | `comments.csv` | Every cleaned comment with its Theme, Key Messages, Sentiment, Emotion, likes, and language. This is the file for handpicking quotes. |
 | `key-messages.csv` | Travel percentages per Key Message. |
 | `themes.csv` | Theme frequencies. |
@@ -66,38 +144,15 @@ Six files per run.
 
 Downloads are named `<Session>-<YYYY-MM-DD HHmm>-<File>`, stamped with the run's finish time in local time, for example `Spring Launch-2026-09-19 1430-Key Messages.csv`.
 
-The four small CSVs are shaped to be dropped straight into Google Slides or any chart tool. The pipeline draws no charts of its own on purpose, because the design team builds their own.
-
-`report.pdf` is an internal debrief, not a client deliverable.
-
----
-
-## Running it
-
-The tool is a local web app. Start the server, open the browser, work from there.
-
-```bash
-pip install -r requirements.txt -r requirements-server.txt
-playwright install chromium
-python server.py
-# http://localhost:8000
-```
-
-The server binds loopback. Users sign in with their Google Workspace account, and admins can block or erase users. A Cloudflare named tunnel publishes the service at a stable HTTPS hostname without exposing a local port directly.
-
-There is also a CLI (`python run.py`, configured through `config.py`). It is for debugging the pipeline without the web layer. It is not the product and it is not maintained to the same standard.
-
-Full installation, model setup, deployment, and troubleshooting: [docs/setup.md](docs/setup.md).
+The four small CSVs drop straight into Google Slides or any chart tool. The pipeline draws no charts of its own on purpose, because the design team builds their own.
 
 ---
 
 ## The model
 
-The tool runs a multimodal `Qwen3.8-27B` build through LM Studio (API key `qwen/qwen3.8-27b`). The model drafts grounded Key Messages from User Inputs and labels every comment with a Theme, Key Message mentions, Sentiment, and Emotion. Nothing is sent to an external model API.
+The tool runs a multimodal `Qwen3.8-27B` build through LM Studio (API key `qwen/qwen3.8-27b`). The model drafts grounded Key Messages from User Inputs and labels every comment. Python validates every label and counts every percentage.
 
-Python validates every label and counts every percentage. The model never emits report statistics directly.
-
-The server reaches LM Studio on the same machine or on a private-network host through `LLM_BASE_URL`, with an optional API token in `LLM_HEADERS`. Local inference has no per-run API cost and keeps client material on machines you control. Throughput depends on the model build, context, batch size, and corpus. With `CLASSIFY_BATCH_SIZE=16`, a 574-comment run finished in 32 minutes.
+The server reaches LM Studio on the same machine or on a private-network host through `LLM_BASE_URL`, with an optional API token in `LLM_HEADERS`. Throughput depends on the model build, context, batch size, and corpus. With `CLASSIFY_BATCH_SIZE=16`, a 574-comment run finished in 32 minutes.
 
 ---
 
@@ -112,16 +167,9 @@ The server reaches LM Studio on the same machine or on a private-network host th
 
 ## Status
 
-**Finished (2026-09-11).** The pipeline, backend, frontend, six public artifacts, merged classification pass, and LM Studio `LLM_*` provider boundary are shipped.
+Finished on 2026-09-11. Two real Sessions ran through the web app against the live model, and each labelled all 574 comments. Known bugs and planned work are [open GitHub issues](https://github.com/aubreyasta/YouTube-Comments-Intelligence/issues).
 
-End-to-end acceptance passed on 2026-09-11:
-
-- The command suite passes: 19 `tests/*.py` scripts with 173 assertions, including `tests/e2e_product_flow.py` 20/20, plus `node --check` on both frontend files.
-- Two real Sessions ran through the web app against the live model. Each labelled all 574 comments.
-
-Known bugs and the planned UI refresh are open GitHub issues ([#2-#11](https://github.com/aubreyasta/YouTube-Comments-Intelligence/issues)). None blocks the finished status.
-
-Chat, source discovery, OCR, custom lenses, and run history are out of scope. Disabled controls remain disabled rather than pretending those features exist.
+Chat, source discovery, OCR, custom lenses, and run history are out of scope. Disabled controls stay disabled rather than pretending those features exist.
 
 ---
 
@@ -131,3 +179,15 @@ Chat, source discovery, OCR, custom lenses, and run history are out of scope. Di
 - [docs/deployment.md](docs/deployment.md) current deployment state and the reference Mac procedure.
 - [docs/architecture.md](docs/architecture.md) how the pipeline, backend, and frontend fit together.
 - [docs/api-reference.md](docs/api-reference.md) the HTTP contract.
+
+README screenshots come from the demo mode. Regenerate them with `python demo_data/capture_screenshots.py`.
+
+---
+
+## Credits
+
+Built by Samudera Aubreyasta at Innocean Indonesia, with deployment support from James Purnama.
+
+## License
+
+© 2026 Samudera Aubreyasta. All rights reserved.
