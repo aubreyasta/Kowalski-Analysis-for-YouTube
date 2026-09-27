@@ -1,7 +1,7 @@
 """
 Captures the README screenshots and walkthrough GIF from the frontend-only
 demo (?demo=1). Serves app/ on a free loopback port, drives one Indomie
-Session from Home to results in headless Chromium, and writes to docs/media/.
+Session from the Sessions list to results in headless Chromium, and writes to docs/media/.
 
 Run: python demo_data/capture_screenshots.py   (needs ffmpeg on PATH)
 Fails on any page error or missing screen, so a UI change cannot leave
@@ -137,8 +137,8 @@ def capture(base, frame_dir):
         page.set_default_timeout(TIMEOUT_MS)
         page.on("pageerror", lambda e: errors.append(str(e)))
 
-        page.goto(base + "/?demo=1#/home")
-        create = page.get_by_role("link", name="Create your first session")
+        page.goto(base + "/?demo=1#/sessions")
+        create = page.get_by_role("link", name="New session", exact=True)
         create.wait_for()
         rec = Recorder(page, frame_dir)
         rec.shot(1200)

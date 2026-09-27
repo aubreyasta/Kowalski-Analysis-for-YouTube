@@ -2,7 +2,7 @@
 
 Reads a campaign's YouTube comments and reports whether the message landed.
 
-[Sample report (PDF)](app/demo/report.pdf) · [Try the demo](#try-it) · [Setup](docs/setup.md) · [Architecture](docs/architecture.md)
+[Live demo](https://aubreyasta.github.io/YouTube-Comments-Intelligence/?demo=1#/runs/example-run/results) · [Sample report (PDF)](app/demo/report.pdf) · [Setup](docs/setup.md) · [Architecture](docs/architecture.md)
 
 ![Walkthrough: create a Session, add two YouTube videos, run, confirm the Key Messages, then open the comments behind a Travel figure](docs/media/walkthrough.gif)
 
@@ -80,14 +80,14 @@ Evidence works the same way. For each metric the tool takes up to eight comments
 
 ## Try it
 
-**Demo, no model or keys needed.** The frontend has a demo mode that replays the hand-labelled Indomie Cabe Ijo Session from `app/demo/`. It never calls the model or the API.
+**[Live demo](https://aubreyasta.github.io/YouTube-Comments-Intelligence/?demo=1#/runs/example-run/results), no model or keys needed.** The frontend has a demo mode that replays the hand-labelled Indomie Cabe Ijo Session from `app/demo/`. It never calls the model or the API. It opens on the finished Session's results. Create a new Session, paste any YouTube link, and start a run to walk the full flow, including the Key Message review, in under a minute.
+
+The same demo runs locally:
 
 ```bash
 python -m http.server 8000 --bind 127.0.0.1 --directory app
 # open http://127.0.0.1:8000/?demo=1
 ```
-
-Create a Session, paste any YouTube link, and start a run. The demo walks the full flow, including the Key Message review, in under a minute.
 
 **Full app.** Needs YouTube API keys, a Google OAuth client, and LM Studio.
 
