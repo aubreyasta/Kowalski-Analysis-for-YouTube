@@ -46,7 +46,7 @@ from pipeline.config_types import llm_env
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
-app = FastAPI(title="YouTube Comment Intelligence")
+app = FastAPI(title="Kowalski")
 
 
 # Google sign-in - the only gate, applied before routing
